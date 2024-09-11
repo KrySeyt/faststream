@@ -206,45 +206,46 @@ def get_broker_channels(
 
 def _resolve_msg_payloads(
     message_name: str,
-    m: Message,
+    message: Message,
     channel_name: str,
     payloads: AnyDict,
     messages: AnyDict,
 ) -> Reference:
-    assert isinstance(m.payload, dict)
+    assert isinstance(message.payload, dict)
 
-    m.payload = move_pydantic_refs(m.payload, DEF_KEY)
+    message.payload = move_pydantic_refs(message.payload, DEF_KEY)
 
     message_name = clear_key(message_name)
     channel_name = clear_key(channel_name)
 
-    if DEF_KEY in m.payload:
-        payloads.update(m.payload.pop(DEF_KEY))
+    if DEF_KEY in message.payload:
+        payloads.update(message.payload.pop(DEF_KEY))
 
-    one_of = m.payload.get("oneOf", None)
+    one_of = message.payload.get("oneOf", None)
     if isinstance(one_of, dict):
+        payloads.update(one_of)
+
         one_of_list = []
-        processed_payloads: Dict[str, AnyDict] = {}
+        processed_payloads = {}
         for name, payload in one_of.items():
             processed_payloads[clear_key(name)] = payload
             one_of_list.append(Reference(**{"$ref": f"#/components/schemas/{name}"}))
 
         payloads.update(processed_payloads)
-        m.payload["oneOf"] = one_of_list
-        assert m.title
-        messages[clear_key(m.title)] = m
+        message.payload["oneOf"] = one_of_list
+
+        assert message.title
+        messages[clear_key(message.title)] = message
         return Reference(
             **{"$ref": f"#/components/messages/{channel_name}:{message_name}"}
         )
 
     else:
-        payloads.update(m.payload.pop(DEF_KEY, {}))
-        payload_name = m.payload.get("title", f"{channel_name}:{message_name}:Payload")
+        payloads.update(message.payload.pop(DEF_KEY, {}))
+        payload_name = message.payload.get("title", f"{channel_name}:{message_name}:Payload")
         payload_name = clear_key(payload_name)
-        payloads[payload_name] = m.payload
-        m.payload = {"$ref": f"#/components/schemas/{payload_name}"}
-        assert m.title
-        messages[clear_key(m.title)] = m
-        return Reference(
-            **{"$ref": f"#/components/messages/{channel_name}:{message_name}"}
-        )
+        payloads[payload_name] = message.payload
+        message.payload = {"$ref": f"#/components/schemas/{payload_name}"}
+        assert message.title
+        messages[clear_key(message.title)] = message
+

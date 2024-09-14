@@ -38,8 +38,10 @@ if TYPE_CHECKING:
 def get_app_schema(app: Application) -> Schema:
     """Get the application schema."""
     broker = app.broker
+
     if broker is None:  # pragma: no cover
         raise RuntimeError()
+
     broker.setup()
 
     servers = get_broker_server(broker)
@@ -60,7 +62,11 @@ def get_app_schema(app: Application) -> Schema:
             assert isinstance(message, Message)
 
             msgs[message_name] = _resolve_msg_payloads(
-                message_name, message, channel_name, payloads, messages
+                clear_key(message_name),
+                message,
+                clear_key(channel_name),
+                payloads,
+                messages
             )
 
         channel.messages = msgs
@@ -71,11 +77,19 @@ def get_app_schema(app: Application) -> Schema:
             version=app.version,
             description=app.description,
             termsOfService=app.terms_of_service,
-            contact=contact_from_spec(app.contact) if app.contact else None,
-            license=license_from_spec(app.license) if app.license else None,
+
+            contact=contact_from_spec(app.contact)
+            if app.contact
+            else None,
+
+            license=license_from_spec(app.license)
+            if app.license
+            else None,
+
             tags=[tag_from_spec(tag) for tag in app.specs_tags]
             if app.specs_tags
             else None,
+
             externalDocs=docs_from_spec(app.external_docs)
             if app.external_docs
             else None,
@@ -88,6 +102,7 @@ def get_app_schema(app: Application) -> Schema:
         components=Components(
             messages=messages,
             schemas=payloads,
+
             securitySchemes=None
             if broker.security is None
             else broker.security.get_schema(),
@@ -174,7 +189,6 @@ def get_broker_channels(
         for channel_name, specs_channel in sub.schema().items():
             if specs_channel.subscribe:
                 message = specs_channel.subscribe.message
-                assert message.title
 
                 *left, right = message.title.split(":")
                 message.title = ":".join(left) + f":Subscribe{right}"
@@ -218,9 +232,6 @@ def _resolve_msg_payloads(
     if DEF_KEY in message.payload:
         payloads.update(message.payload.pop(DEF_KEY))
 
-    message_name = clear_key(message_name)
-    channel_name = clear_key(channel_name)
-
     one_of = message.payload.get("oneOf", None)
     if isinstance(one_of, dict):
         payloads.update(one_of)
@@ -236,14 +247,13 @@ def _resolve_msg_payloads(
             **{"$ref": f"#/components/messages/{channel_name}:{message_name}"}
         )
 
-    else:
-        payload_name = message.payload.get("title", f"{channel_name}:{message_name}:Payload")
-        payload_name = clear_key(payload_name)
-        payloads[payload_name] = message.payload
-        message.payload = {"$ref": f"#/components/schemas/{payload_name}"}
+    payload_name = message.payload.get("title", f"{channel_name}:{message_name}:Payload")
+    payload_name = clear_key(payload_name)
+    payloads[payload_name] = message.payload
+    message.payload = {"$ref": f"#/components/schemas/{payload_name}"}
 
-        messages[clear_key(message.title)] = message
+    messages[clear_key(message.title)] = message
 
-        return Reference(
-            **{"$ref": f"#/components/messages/{channel_name}:{message_name}"}
-        )
+    return Reference(
+        **{"$ref": f"#/components/messages/{channel_name}:{message_name}"}
+    )

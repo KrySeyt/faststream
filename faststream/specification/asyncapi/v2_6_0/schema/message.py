@@ -59,7 +59,7 @@ class Message(BaseModel):
 
     """
 
-    title: Optional[str] = None
+    title: str
     name: Optional[str] = None
     summary: Optional[str] = None
     description: Optional[str] = None

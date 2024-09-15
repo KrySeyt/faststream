@@ -225,32 +225,28 @@ def _resolve_msg_payloads(
     payloads: AnyDict,
     messages: AnyDict,
 ) -> Reference:
-    assert isinstance(message.payload, dict)
-
     message.payload = move_pydantic_refs(message.payload, DEF_KEY)
 
     if DEF_KEY in message.payload:
         payloads.update(message.payload.pop(DEF_KEY))
 
+    msg_payload: AnyDict = {}
     one_of = message.payload.get("oneOf", None)
     if isinstance(one_of, dict):
         payloads.update(one_of)
 
-        message.payload["oneOf"] = [
+        msg_payload["oneOf"] = [
             Reference(**{"$ref": f"#/components/schemas/{name}"})
             for name in one_of
         ]
 
-        messages[clear_key(message.title)] = message
+    else:
+        payload_name = message.payload.get("title", f"{channel_name}:{message_name}:Payload")
+        payload_name = clear_key(payload_name)
+        payloads[payload_name] = message.payload
+        msg_payload["$ref"] = f"#/components/schemas/{payload_name}"
 
-        return Reference(
-            **{"$ref": f"#/components/messages/{channel_name}:{message_name}"}
-        )
-
-    payload_name = message.payload.get("title", f"{channel_name}:{message_name}:Payload")
-    payload_name = clear_key(payload_name)
-    payloads[payload_name] = message.payload
-    message.payload = {"$ref": f"#/components/schemas/{payload_name}"}
+    message.payload = msg_payload
 
     messages[clear_key(message.title)] = message
 

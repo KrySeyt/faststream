@@ -44,16 +44,14 @@ class SpecificationSubscriber(LogicSubscriber):
                 bindings=ChannelBinding(
                     amqp=amqp.ChannelBinding(
                         **{
-                            "is_": "routingKey",  # type: ignore
+                            "is_": "queue",  # type: ignore
                             "queue": amqp.Queue(
                                 name=self.queue.name,
                                 durable=self.queue.durable,
                                 exclusive=self.queue.exclusive,
                                 autoDelete=self.queue.auto_delete,
                                 vhost=self.virtual_host,
-                            )
-                            if is_routing_exchange(self.exchange) and self.queue.name
-                            else None,
+                            ),
                             "exchange": (
                                 amqp.Exchange(type="default", vhost=self.virtual_host)
                                 if not self.exchange.name

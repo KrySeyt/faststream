@@ -6,6 +6,7 @@ from typing import (
     Sequence,
     Tuple,
     Union,
+    cast,
     overload,
 )
 
@@ -39,7 +40,7 @@ def create_subscriber(
     no_reply: bool,
     retry: bool,
     broker_dependencies: Iterable["Depends"],
-    broker_middlewares: Iterable["BrokerMiddleware[Tuple[ConfluentMsg, ...]]"],
+    broker_middlewares: Sequence["BrokerMiddleware[Tuple[ConfluentMsg, ...]]"],
     # AsyncAPI args
     title_: Optional[str],
     description_: Optional[str],
@@ -63,7 +64,7 @@ def create_subscriber(
     no_reply: bool,
     retry: bool,
     broker_dependencies: Iterable["Depends"],
-    broker_middlewares: Iterable["BrokerMiddleware[ConfluentMsg]"],
+    broker_middlewares: Sequence["BrokerMiddleware[ConfluentMsg]"],
     # AsyncAPI args
     title_: Optional[str],
     description_: Optional[str],
@@ -87,8 +88,9 @@ def create_subscriber(
     no_reply: bool,
     retry: bool,
     broker_dependencies: Iterable["Depends"],
-    broker_middlewares: Iterable[
-        "BrokerMiddleware[Union[ConfluentMsg, Tuple[ConfluentMsg, ...]]]"
+    broker_middlewares: Union[
+        Sequence["BrokerMiddleware[Tuple[ConfluentMsg, ...]]"],
+        Sequence["BrokerMiddleware[ConfluentMsg]"],
     ],
     # AsyncAPI args
     title_: Optional[str],
@@ -115,8 +117,9 @@ def create_subscriber(
     no_reply: bool,
     retry: bool,
     broker_dependencies: Iterable["Depends"],
-    broker_middlewares: Iterable[
-        "BrokerMiddleware[Union[ConfluentMsg, Tuple[ConfluentMsg, ...]]]"
+    broker_middlewares: Union[
+        Sequence["BrokerMiddleware[Tuple[ConfluentMsg, ...]]"],
+        Sequence["BrokerMiddleware[ConfluentMsg]"],
     ],
     # AsyncAPI args
     title_: Optional[str],
@@ -139,7 +142,10 @@ def create_subscriber(
             no_reply=no_reply,
             retry=retry,
             broker_dependencies=broker_dependencies,
-            broker_middlewares=broker_middlewares,
+            broker_middlewares=cast(
+                Sequence["BrokerMiddleware[Tuple[ConfluentMsg, ...]]"],
+                broker_middlewares,
+            ),
             title_=title_,
             description_=description_,
             include_in_schema=include_in_schema,
@@ -156,7 +162,10 @@ def create_subscriber(
             no_reply=no_reply,
             retry=retry,
             broker_dependencies=broker_dependencies,
-            broker_middlewares=broker_middlewares,
+            broker_middlewares=cast(
+                Sequence["BrokerMiddleware[ConfluentMsg]"],
+                broker_middlewares,
+            ),
             title_=title_,
             description_=description_,
             include_in_schema=include_in_schema,

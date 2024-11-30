@@ -203,6 +203,10 @@ class NatsRouter(StreamRouter["Msg"]):
             Optional[str],
             Doc("Nkeys seed to be used."),
         ] = None,
+        nkeys_seed_str: Annotated[
+            Optional[str],
+            Doc("Raw nkeys seed to be used."),
+        ] = None,
         inbox_prefix: Annotated[
             Union[str, bytes],
             Doc(
@@ -233,7 +237,7 @@ class NatsRouter(StreamRouter["Msg"]):
             Doc("Custom parser object."),
         ] = None,
         middlewares: Annotated[
-            Iterable["BrokerMiddleware[Msg]"],
+            Sequence["BrokerMiddleware[Msg]"],
             Doc("Middlewares to apply to all broker publishers/subscribers."),
         ] = (),
         # AsyncAPI args
@@ -533,6 +537,7 @@ class NatsRouter(StreamRouter["Msg"]):
             user_jwt_cb=user_jwt_cb,
             user_credentials=user_credentials,
             nkeys_seed=nkeys_seed,
+            nkeys_seed_str=nkeys_seed_str,
             inbox_prefix=inbox_prefix,
             pending_size=pending_size,
             flush_timeout=flush_timeout,
@@ -688,7 +693,7 @@ class NatsRouter(StreamRouter["Msg"]):
             Doc("Function to decode FastStream msg bytes body to python objects."),
         ] = None,
         middlewares: Annotated[
-            Iterable["SubscriberMiddleware[NatsMessage]"],
+            Sequence["SubscriberMiddleware[NatsMessage]"],
             Doc("Subscriber middlewares to wrap incoming message processing."),
         ] = (),
         filter: Annotated[
@@ -940,7 +945,7 @@ class NatsRouter(StreamRouter["Msg"]):
         ] = None,
         # specific
         middlewares: Annotated[
-            Iterable["PublisherMiddleware"],
+            Sequence["PublisherMiddleware"],
             Doc("Publisher middlewares to wrap outgoing messages."),
         ] = (),
         # AsyncAPI information

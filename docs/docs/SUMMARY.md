@@ -230,6 +230,7 @@ search:
                 - [make_ping_asgi](api/faststream/asgi/make_ping_asgi.md)
                 - app
                     - [AsgiFastStream](api/faststream/asgi/app/AsgiFastStream.md)
+                    - [cast_uvicorn_params](api/faststream/asgi/app/cast_uvicorn_params.md)
                 - factories
                     - [make_asyncapi_asgi](api/faststream/asgi/factories/make_asyncapi_asgi.md)
                     - [make_ping_asgi](api/faststream/asgi/factories/make_ping_asgi.md)
@@ -448,6 +449,8 @@ search:
                     - [run](api/faststream/cli/main/run.md)
                     - [version_callback](api/faststream/cli/main/version_callback.md)
                 - supervisors
+                    - asgi_multiprocess
+                        - [ASGIMultiprocess](api/faststream/cli/supervisors/asgi_multiprocess/ASGIMultiprocess.md)
                     - basereload
                         - [BaseReload](api/faststream/cli/supervisors/basereload/BaseReload.md)
                     - multiprocess
@@ -567,12 +570,14 @@ search:
                 - subscriber
                     - asyncapi
                         - [AsyncAPIBatchSubscriber](api/faststream/confluent/subscriber/asyncapi/AsyncAPIBatchSubscriber.md)
+                        - [AsyncAPIConcurrentDefaultSubscriber](api/faststream/confluent/subscriber/asyncapi/AsyncAPIConcurrentDefaultSubscriber.md)
                         - [AsyncAPIDefaultSubscriber](api/faststream/confluent/subscriber/asyncapi/AsyncAPIDefaultSubscriber.md)
                         - [AsyncAPISubscriber](api/faststream/confluent/subscriber/asyncapi/AsyncAPISubscriber.md)
                     - factory
                         - [create_subscriber](api/faststream/confluent/subscriber/factory/create_subscriber.md)
                     - usecase
                         - [BatchSubscriber](api/faststream/confluent/subscriber/usecase/BatchSubscriber.md)
+                        - [ConcurrentDefaultSubscriber](api/faststream/confluent/subscriber/usecase/ConcurrentDefaultSubscriber.md)
                         - [DefaultSubscriber](api/faststream/confluent/subscriber/usecase/DefaultSubscriber.md)
                         - [LogicSubscriber](api/faststream/confluent/subscriber/usecase/LogicSubscriber.md)
                 - testing
@@ -613,6 +618,8 @@ search:
                         - [KafkaLoggingBroker](api/faststream/kafka/broker/logging/KafkaLoggingBroker.md)
                     - registrator
                         - [KafkaRegistrator](api/faststream/kafka/broker/registrator/KafkaRegistrator.md)
+                - exceptions
+                    - [BatchBufferOverflowException](api/faststream/kafka/exceptions/BatchBufferOverflowException.md)
                 - fastapi
                     - [Context](api/faststream/kafka/fastapi/Context.md)
                     - [KafkaRouter](api/faststream/kafka/fastapi/KafkaRouter.md)
@@ -955,6 +962,7 @@ search:
                     - [build_message](api/faststream/rabbit/testing/build_message.md)
                 - utils
                     - [build_url](api/faststream/rabbit/utils/build_url.md)
+                    - [build_virtual_host](api/faststream/rabbit/utils/build_virtual_host.md)
                     - [is_routing_exchange](api/faststream/rabbit/utils/is_routing_exchange.md)
             - redis
                 - [ListSub](api/faststream/redis/ListSub.md)
